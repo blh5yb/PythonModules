@@ -40,6 +40,7 @@ class ChromeScraper:
         """
         Find elements by ID
         :param tag: ID of the elements to fetch, str
+        :return elements: html elements found by driver, array
         """
         try:
             elements = self.__driver.find_elements(By.ID, tag)
@@ -54,6 +55,7 @@ class ChromeScraper:
         """
         Find elements by Class Name
         :param tag: Class Name of the elements to fetch, str
+        :return elements: html elements found by driver, array
         """
         try:
             elements = self.__driver.find_elements(By.CLASS_NAME, tag)
