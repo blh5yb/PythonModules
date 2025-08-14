@@ -18,7 +18,7 @@ class StaticWebScraper:
         self.url = url
         try:
             self.__response = requests.get(url)
-            logger.info(f'Initializing StaticWebScraper')
+            logger.info(f'Initializing StaticWebScraper for {url}')
         except Exception as e:
             logger.error(f"Error fetching url, {url}: {e}")
             raise
@@ -41,7 +41,6 @@ class StaticWebScraper:
 
 
 def main(args):
-    # 'https://barryhightech.org/home'
     scraping = StaticWebScraper(args.url)
     scraping.extract_static_content('div', {'id', 'my_id'})
 
