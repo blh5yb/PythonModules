@@ -1,9 +1,5 @@
 from pypdf import PdfReader, PdfWriter
-# from src.shared import logger
-import logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s',
-                    datefmt='%m/%d/%Y %H:%M:%S %Z')
-logger = logging.getLogger(__name__)
+from src.shared import logger
 
 ########################################################################################################################
 # Pdf Splitting Module
