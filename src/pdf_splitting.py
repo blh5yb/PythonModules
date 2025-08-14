@@ -75,9 +75,7 @@ def main(args):
     # input_pdf = "./Input/Python.pdf"
     out = f"{args.out_folder}/{args.out_prefix}"
     split_pdf = PdfSplitting(args.input_pdf)
-    # SplitPdf.write_page_range(0, 2, f'./Output/sample_out1.pdf')
     split_pdf.write_page_range(0, 2, f'{out}.pdf')
-    # SplitPdf.write_single_pages({0,2}, './Output/single_pdf_page')
     split_pdf.write_single_pages({0,2}, out)
 
 
@@ -88,9 +86,4 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--out_folder', type=str, action="store", required=True, help="output folder")
     parser.add_argument('-p', '--out_prefix', type=str, action="store", required=True, help="output file prefix (i.e out_file)")
     parser_args = parser.parse_args()
-    # parser_args = {
-    #     'input_pdf':  input("Please enter the full path to the input pdf file: "),
-    #     'out_folder': input("Please enter the path to the output folder: "),
-    #     'out_prefix': input("Please enter the out file prefix: ")
-    # }
     main(parser_args)
