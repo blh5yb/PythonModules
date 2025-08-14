@@ -10,14 +10,14 @@ from src.shared import logger
 
 class PdfSplitting:
     """Split pdfs into separate pages"""
-    def __init__(cls, in_pdf):
+    def __init__(self, in_pdf):
         """
         Initialize PdfReader for input file
         :param in_pdf: full path to input pdf file, str
         """
         # super().__init__()
         try:
-            cls.__reader = PdfReader(in_pdf)
+            self.__reader = PdfReader(in_pdf)
             logger.info(f"Created pdf reader for {in_pdf}")
         except Exception as e:
             logger.error(f"An error occurred reading pdf file, {in_pdf}: {e}")

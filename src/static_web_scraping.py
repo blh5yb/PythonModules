@@ -10,12 +10,12 @@ from src.shared import *
 
 class StaticWebScraper:
     """Static HTML Web Scraper Module"""
-    def __init__(self, url):
+    def __init__(cls, url):
         """
         Fetch static html
         :param url: website to scrape, str
         """
-        self.url = url
+        cls.url = url
         try:
             self.__response = requests.get(url)
             logger.info(f'Initializing StaticWebScraper')
@@ -42,6 +42,7 @@ class StaticWebScraper:
 
 def main(args):
     # 'https://barryhightech.org/home'
+    StaticWebScraper(args.url)
     scraping = StaticWebScraper(args.url)
     scraping.extract_static_content('div', {'id', 'my_id'})
 
