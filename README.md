@@ -63,7 +63,7 @@ Usage: python src/web_scraping.py <commands>
 
 ### Run Unit Tests
 ```
-coverage run --source=./src -m pytest && coverage report -m
+% coverage run --source=./src -m pytest && coverage report -m
 ```
 
 ### Coverage
