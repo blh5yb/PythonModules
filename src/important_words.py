@@ -18,13 +18,10 @@ def word_search(text, k):
     :param k: min number of occurrences, int
     """
     word_dict = defaultdict(int)
-    words_array = []
     for word in text.split(' '):
-        if not word_dict[word]:
-            words_array.append(word)
         word_dict[word] += 1
 
-    important_words = [word for word in words_array if word_dict[word] >= k]
+    important_words = [key for key in word_dict if word_dict[key] >= k]
     return important_words
 
 
