@@ -24,11 +24,16 @@ def multi_page_pdf(request, tmp_path_factory):
 
 
 @pytest.fixture(scope="function")
-def create_dummy_input_file(request, tmp_path):
+def create_named_test_file(request, tmp_path):
     """creates temp input files"""
     print('param', request.param)
     file = tmp_path / request.param
     yield file
     file.unlink()
 
-
+@pytest.fixture(scope="function")
+def create_general_test_file(tmp_path):
+    """creates temp input files"""
+    file = tmp_path / 'file.ext'
+    yield file
+    file.unlink()

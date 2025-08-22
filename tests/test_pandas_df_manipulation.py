@@ -1,6 +1,6 @@
 import pandas as pd
 
-from tests.custom_fixtures import pytest, patch, Mock, create_dummy_input_file
+from tests.custom_fixtures import pytest, create_general_test_file
 
 from src.pandas_df_manipulation import *
 
@@ -15,14 +15,31 @@ input_data = (f'school_code,district_code,subjects\n'
               f'sc8,^^dt3,literature speech economics\n')
 
 @pytest.mark.parametrize(
-    'create_dummy_input_file',['input.csv'], indirect=True
+    'in2, in3, expected', [
+        (
+            2, ['mathematics', 'biology'],
+            {
+                'district_code': ['dt1', 'dt3', 'dt2'],
+                'mathematics': [1, 2, 1],
+                'biology': [3, 0, 1]
+            }
+         ),
+        (
+            3, ['biology', 'history', 'literature'],
+            {
+                'district_code': ['dt1', 'dt2', 'dt3'],
+                'biology': [2, 1, 0],
+                'history': [1, 1, 0],
+                'literature': [1, 0, 1]
+            }
+        )
+    ]
 )
-def test_df_manipulation(create_dummy_input_file, tmp_path):
-    input_csv = create_dummy_input_file
+def test_df_manipulation(in2, in3, expected, create_general_test_file, tmp_path):
+    input_csv = create_general_test_file
     input_csv.write_text(input_data)
-    expected_data = {'district_code': ['dt1', 'dt3', 'dt2'], 'mathematics': [1, 2, 1], 'biology': [3, 0, 1]}
     fake_result = {'district_code': ['dt5', 'dt1', 'dt2'], 'mathematics': [1, 2, 1], 'biology': [3, 0, 1]}
 
-    result = df_manipulation(f'{tmp_path}/input.csv', 2, ['mathematics', 'biology'])
-    assert result.equals(pd.DataFrame(expected_data))
-    assert not result.equals(pd.DataFrame(fake_result))
+    actual = df_manipulation(f'{tmp_path}/file.ext', in2, in3)
+    assert actual.equals(pd.DataFrame(expected))
+    assert not actual.equals(pd.DataFrame(fake_result))
