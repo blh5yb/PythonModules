@@ -10,7 +10,7 @@ Program: pdf_splitting.py
 Version 1.0.0 (python 3.6+ compatible)
 Usage: python src/pdf_splitting.py <commands>
   -h/--help             show this help message
-  -i/input_pdf          full/relative path to input file
+  -i/--input_pdf        full/relative path to input file
   -o/--out_folder       full/relative path output folder
   -p/--out_prefix       output file prefix (i.e out_file)
 ```
@@ -31,7 +31,7 @@ Program: static_web_scraping.py
 Version 1.0.0 (python 3.6+ compatible)
 Usage: python src/web_scraping.py <commands>
   -h/--help             show this help message
-  -u/url                website url
+  -u/--url              website url
 ```
 
 ### Output
@@ -45,7 +45,7 @@ Program: dynamic_web_scraping.py
 Version 1.0.0 (python 3.6+ compatible)
 Usage: python src/web_scraping.py <commands>
   -h/--help             show this help message
-  -u/url                website url
+  -u/--url              website url
 ```
 
 ### Output
@@ -66,7 +66,7 @@ Program: pandas_df_manipulation.py
 Version 1.0.0 (python 3.6+ compatible)
 Usage: python src/pandas_df_manipulation.py <commands>
   -h/--help                 show this help message
-  -i/input_csv              full path to csv input file
+  -i/--input_csv            full path to csv input file
   -m/--min_subjects         minimum school subjects offered
   -s/--query_subjects       subjects to counts for output df
 ```
@@ -85,7 +85,7 @@ Program: important_words.py
 Version 1.0.0 (python 3.6+ compatible)
 Usage: python src/important_words.py <commands>
   -h/--help                 show this help message
-  -i/input_csv              full path to csv input file
+  -i/--input_csv            full path to csv input file
   -m/--min_subjects         minimum school subjects offered
   -s/--query_subjects       subjects to counts for output df
 ```
