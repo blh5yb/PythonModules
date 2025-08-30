@@ -40,6 +40,9 @@ def test_df_manipulation(in2, in3, expected, create_general_test_file, tmp_path)
     input_csv.write_text(input_data)
     fake_result = {'district_code': ['dt5', 'dt1', 'dt2'], 'mathematics': [1, 2, 1], 'biology': [3, 0, 1]}
 
+    # from time import time
+    # start = time()
     actual = df_manipulation(f'{tmp_path}/file.ext', in2, in3)
+    # print(f"Script took {time() - start} seconds")
     assert actual.equals(pd.DataFrame(expected))
     assert not actual.equals(pd.DataFrame(fake_result))

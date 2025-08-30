@@ -18,6 +18,7 @@ def word_search(text, k):
     :param k: min number of occurrences, int
     """
     word_dict = defaultdict(int)
+
     for word in text.split(' '):
         word_dict[word] += 1
 
