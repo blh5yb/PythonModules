@@ -82,7 +82,7 @@ Usage: python src/pandas_df_manipulation.py <commands>
   - Drop rows/ schools that offer fewer than <min_subjects> subjects
 ```
 Program: important_words.py
-Version 1.0.0 (python 3.6+ compatible)
+Version 1.0.0 (python 3.7+ compatible)
 Usage: python src/important_words.py <commands>
   -h/--help                 show this help message
   -i/--input_csv            full path to csv input file
