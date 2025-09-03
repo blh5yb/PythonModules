@@ -1,7 +1,7 @@
 import pytest
+from unittest.mock import patch, Mock
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from unittest.mock import patch, Mock
 
 
 @pytest.fixture(scope="session")

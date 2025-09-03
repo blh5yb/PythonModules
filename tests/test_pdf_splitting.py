@@ -71,13 +71,12 @@ class TestPdfSplitting:
         assert mock_pdf_writer.return_value.add_page.call_count == 2
         # assert mock_write_output.call_count == 2
 
-    @patch('src.pdf_splitting.PdfReader')
     @pytest.mark.parametrize(
         'multi_page_pdf',
         [{"pdf_file": "test_pdf_file.pdf", "total_pages": 3}],
         indirect=True
     )
-    def test_write_single_pages_exception(self, mock_pdf_reader, mock_pdf_writer, multi_page_pdf, tmp_path):
+    def test_write_single_pages_exception(self, mock_pdf_writer, multi_page_pdf, tmp_path):
 
         split_pdf = PdfSplitting(multi_page_pdf)
         mock_pdf_writer.return_value.add_page.side_effect = Exception("Single Pages Exception Caught")
