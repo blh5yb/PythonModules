@@ -30,7 +30,6 @@ class ChromeScraper:
             self.__driver = webdriver.Chrome(service=service, options=options)
             self.__driver.get(url)
             time.sleep(1) # Optional wait to ensure page loads
-            print('url', url)
             logger.info(f'loaded chrome driver: {url}')
 
         except Exception as e:
