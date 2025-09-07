@@ -30,7 +30,7 @@ class ChromeScraper:
             self.__driver = webdriver.Chrome(service=service, options=options)
             self.__driver.get(url)
             time.sleep(1) # Optional wait to ensure page loads
-            logger.info('loaded chrome driver', url)
+            logger.info(f'loaded chrome driver: {url}')
 
         except Exception as e:
             logger.error(f"Chrome Driver Initialization Error: {e}")
@@ -77,8 +77,9 @@ def main(args):
     # scraping.extract_static_content('div', {'id', 'my_id'})
     chrome_scraping = ChromeScraper(args.url)
     chrome_scraping.extract_elements_by_class_name('text-header-sm')
-    elements = chrome_scraping.extract_elements_by_class_name('image-center')
-
+    # elements = chrome_scraping.extract_elements_by_class_name('image-center')
+    # elements = chrome_scraping.extract_elements_by_class_name('ion-text-center')
+    # print('elements', elements)
     # # Get the outer HTML of the element
     # outer_html = elements[0].get_attribute('outerHTML')
     # print("Outer HTML:", outer_html)
