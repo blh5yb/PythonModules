@@ -1,5 +1,5 @@
 from src.static_web_scraping import *
-from tests.custom_fixtures import pytest, patch, Mock
+from tests.conftest import pytest, patch, Mock
 
 
 @pytest.fixture(scope="function")

@@ -9,25 +9,25 @@ def multi_page_pdf(request, tmp_path_factory):
     """
     Fixture that creates a multi-page PDF file for testing.
     """
-    print('params', request.param)
-    pdf_path = tmp_path_factory.mktemp("pdf_data") / request.param['pdf_file']
-    print(pdf_path)
-
+    file_name = request.param['file_name']
+    pdf_path = tmp_path_factory.mktemp("pdf_data") / file_name
     c = canvas.Canvas(str(pdf_path), pagesize=letter)
-    for page in range(request.param['total_pages']):
-        c.drawString(100, 750, f"This is Page {page}")
+    for file_text in request.param['text']:
+        print('text', file_text, pdf_path)
+        c.drawString(100, 750, file_text)
         c.showPage()
 
     c.save()
-
     yield pdf_path
+    pdf_path.unlink()
 
 
 @pytest.fixture(scope="function")
 def create_named_test_file(request, tmp_path):
     """creates temp input files"""
     print('param', request.param)
-    file = tmp_path / request.param
+    filename = request.param if request.param else 'file.ext'
+    file = tmp_path / filename
     yield file
     file.unlink()
 

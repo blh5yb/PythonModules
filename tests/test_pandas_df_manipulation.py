@@ -1,6 +1,6 @@
 import pandas as pd
 
-from tests.custom_fixtures import pytest, create_general_test_file
+from tests.conftest import pytest, create_general_test_file
 
 from src.pandas_df_manipulation import *
 

@@ -1,5 +1,5 @@
 
-from tests.custom_fixtures import pytest, patch, Mock
+from tests.conftest import pytest, patch, Mock
 
 from src.important_words import word_search
 
