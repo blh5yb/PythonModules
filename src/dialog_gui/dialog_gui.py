@@ -214,33 +214,32 @@ class InputDialog(tk.Toplevel):
     def ok(self):
         self.result = []
 
-        # 1. Collect Entry Inputs
-        for input_config in self.inputs:
-            widget_id = input_config['widget_id']
-            entry = self.widget_map.get(f'entry_{widget_id}')
-            if entry:
-                self.result.append(entry.get())
+        for item in self.fields:
+            form_field = item.get('form_field', None)
 
-        # 2. Collect Option Inputs
-        for option_config in self.options:
-            widget_id = option_config['widget_id']
+            widget_id = item['widget_id']
             map_key = f'map_{widget_id}'
             display_to_data = self.data_maps.get(map_key, {})
 
-            combobox_name = f'combobox_{widget_id}'
-            listbox_name = f'listbox_{widget_id}'
-
-            if combobox_name in self.widget_map:
+            if form_field == 'input':
+                # item['widget_id'] = self.curr_label
+                entry = self.widget_map.get(f'entry_{widget_id}')
+                if entry:
+                    self.result.append(entry.get())
+            elif form_field == 'combobox':
+                combobox_name = f'combobox_{widget_id}'
                 combobox = self.widget_map[combobox_name]
                 display_text = combobox.get()
                 self.result.append(display_to_data.get(display_text, display_text))
-
-            elif listbox_name in self.widget_map:
+            elif form_field == 'listbox':
+                listbox_name = f'listbox_{widget_id}'
                 listbox = self.widget_map.get(listbox_name)
                 selected_indices = listbox.curselection()
                 display_items = [listbox.get(idx) for idx in selected_indices]
                 final_list = [display_to_data.get(display, display) for display in display_items]
                 self.result.append(final_list)
+            else:
+                print(f"Warning: Field {form_field} ignored.")
 
         # --- FIX 4: Only destroy self, do NOT quit root ---
         self.destroy()
