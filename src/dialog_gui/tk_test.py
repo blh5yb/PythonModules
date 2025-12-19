@@ -18,9 +18,10 @@ THEME_COLORS = {
     "select_bg": "#0078d7"
   }
 }
+import sys
 def get_current_theme(): # Returns 'dark' or 'light'
     mode = darkdetect.theme() if darkdetect else 'light'
-    return mode.lower() if mode else 'light'
+    return mode.lower() if mode and sys.platform != 'win32' else 'light'
 
 # Load the colors for the current mode current_mode = get_current_theme() PALETTE = THEME_COLORS[current_mode]
 
