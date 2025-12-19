@@ -132,6 +132,7 @@ class InputDialog(tk.Toplevel):
             # Create the checkbox in Column 2 (Right of the entry)
             cb = ttk.Checkbutton(self.frame, text="Show", variable=show_pass_var, command=toggle_password)
             cb.grid(row=self.curr_row, column=2, sticky="w", padx=5)
+            self.widget_map[f"check_box_{label}"] = cb
         else:
             entry = ttk.Entry(self.frame, width=40)
 
