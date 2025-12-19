@@ -163,7 +163,7 @@ if __name__ == "__main__":
             hide=['first']
         ),
         input_field(
-            label='Password', type='text', default='password', # disabled=(not config.get('dates_enabled', True)),
+            label='Password', type='password', default='password', # disabled=(not config.get('dates_enabled', True)),
         ),
         combobox_field(
             label='Mode 1 Options',
