@@ -103,15 +103,18 @@ def toggle_fields(dialog, value):
         item = dialog.get_widget(label_text)
         label = dialog.widget_map.get(f"label_{label_text}")
         scrollbar = dialog.widget_map.get(f"scrollbar_{label_text}")
+        checkbox = dialog.widget_map.get(f"check_box_{label_text}")
 
         if item: item.config(state='normal') # start normal
         if item.hide and value in item.hide:
             if item: set_visibility(item, label, False)
             if item: set_visibility(item, scrollbar, False)
+            if item: set_visibility(item, checkbox, False)
 
         else:
             if item: set_visibility(item, label, True)
             if item: set_visibility(item, scrollbar, True)
+            if item: set_visibility(item, checkbox, True)
 
             if value in item.disable: # only need to worry about disabling if visable
                 if item: item.config(state='disabled')
@@ -137,7 +140,7 @@ if __name__ == "__main__":
             hide=['first']
         ),
         input_field(
-            label='Password', type='text', default='password', # disabled=(not config.get('dates_enabled', True)),
+            label='Password', type='password', default='password', # disabled=(not config.get('dates_enabled', True)),
         ),
         combobox_field(
             label='Mode 1 Options',
