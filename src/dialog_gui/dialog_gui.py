@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from typing import List, Optional, Dict, Any
+from typing import List, Any, Optional, Dict
 import tkinter.font as tkFont
 
 OptionConfig = Dict[Any, Any]
@@ -12,9 +12,11 @@ class InputDialog(tk.Toplevel):
 
     def __init__(self, parent, title: str, fields: List[Any]):
         super().__init__(parent)
+
         # --- FIX 1: Remove 'transient' so dialog is independent of hidden root ---
         # self.transient(parent)  <-- REMOVED
         # -------------------------------------------------------------------------
+
         self.root = parent
         self.title(title)
 
@@ -25,6 +27,7 @@ class InputDialog(tk.Toplevel):
 
         # Storage
         self.widget_map: Dict[str, Any] = {}
+        self.label_map: Dict[str, Any] = {} # to access outside
         self.data_maps: Dict[str, Dict[str, Any]] = {}
         self.result: Optional[List[str]] = None
         self.fields = fields
@@ -41,6 +44,13 @@ class InputDialog(tk.Toplevel):
         self.frame = ttk.Frame(self, padding="20")
         self.frame.grid(row=0, column=0, sticky="nsew")
         # -------------------------------------------------------------
+
+    def get_widget(self, label: str):
+        """Helper for the custom callback to find widgets by name."""
+        return self.label_map.get(label)
+
+    def get_labels(self):
+        return self.label_map
 
     def create_dialog_window(self):
         input_idx = 0
@@ -61,6 +71,12 @@ class InputDialog(tk.Toplevel):
                 print(f"Warning: Field {form_field} ignored.")
 
         self.create_buttons()
+
+        # NEW: Run initial logic triggers (e.g., disable fields based on default value)
+        # We do this HERE, after all widgets are created, so 'get_widget' works.
+        if hasattr(self, '_initial_triggers'):
+            for trigger in self._initial_triggers:
+                trigger()
 
         # --- FIX 3: Force Window to Center and Appear ---
         self.center_and_show()
@@ -95,13 +111,27 @@ class InputDialog(tk.Toplevel):
         type = input.get('type', 'password')
         default_value = input.get('default', '')
 
-        ttk.Label(self.frame, text=label + ":").grid(row=self.curr_row, column=0, sticky="w", pady=5)
+        lbl = ttk.Label(self.frame, text=label + ":")# .grid(row=self.curr_row, column=0, sticky="w", pady=5)
+        lbl.grid(row=self.curr_row, column=0, sticky="w", pady=5)
+        self.widget_map[f'label_{label}'] = lbl
 
         widget_id = input['widget_id']
         entry_name = f'entry_{widget_id}'
 
         if type == 'password':
             entry = ttk.Entry(self.frame, width=40, show="*")
+            show_pass_var = tk.BooleanVar(value=False)
+            self.widget_map[f'show_var_{widget_id}'] = show_pass_var
+
+            def toggle_password():
+                if show_pass_var.get():
+                    entry.config(show="")  # Empty string = visible
+                else:
+                    entry.config(show="*")  # Asterisk = hidden
+
+            # Create the checkbox in Column 2 (Right of the entry)
+            cb = ttk.Checkbutton(self.frame, text="Show", variable=show_pass_var, command=toggle_password)
+            cb.grid(row=self.curr_row, column=2, sticky="w", padx=5)
         else:
             entry = ttk.Entry(self.frame, width=40)
 
@@ -111,7 +141,11 @@ class InputDialog(tk.Toplevel):
         if disabled:
             entry.state(['disabled'])
 
+        entry.hide = input.get('hide', [])
+        entry.disable = input.get('disable', [])
+
         self.widget_map[entry_name] = entry
+        self.label_map[input['label']] = entry
         entry.grid(row=self.curr_row, column=1, sticky="ew", padx=5, pady=5)
         self.curr_label = widget_id + 1
         self.curr_row += 1
@@ -131,13 +165,34 @@ class InputDialog(tk.Toplevel):
         map_key = f'map_{widget_id}'
         self.data_maps[map_key] = display_to_data
         default_value = display_values[0] if display_values else ''
+        label = option_config['label']
 
-        ttk.Label(self.frame, text=option_config['label'] + ":").grid(row=self.curr_row, column=0, sticky="w", pady=5)
+        lbl = ttk.Label(self.frame, text=label + ":")
+        lbl.grid(row=self.curr_row, column=0, sticky="w", pady=5)
+        self.widget_map[f'label_{label}'] = lbl
 
         combobox_name = f'combobox_{widget_id}'
         combobox = ttk.Combobox(self.frame, values=display_values, state="readonly", width=38)
         combobox.set(default_value)
+        combobox.hide = option_config.get('hide', [])
+        combobox.disable = option_config.get('disable', [])
         self.widget_map[combobox_name] = combobox
+        self.label_map[option_config['label']] = combobox
+        # Optionally pass in a callback to dynamically update fields (i.e. enabled/ disabled
+        if option_config.get('callback', None):
+            callback_func = option_config['callback']
+
+            def on_change(event=None):
+                # Run the user-provided logic, passing 'self' (the dialog)
+                # so the function can access other widgets.
+                callback_func(self, display_to_data[combobox.get()])
+
+            combobox.bind("<<ComboboxSelected>>", on_change)
+
+            # Save this trigger to run it AFTER all widgets are created
+            if not hasattr(self, '_initial_triggers'):
+                self._initial_triggers = []
+            self._initial_triggers.append(on_change)
 
         combobox.grid(row=self.curr_row, column=1, sticky="ew", padx=5, pady=5)
         self.curr_row += 1
@@ -162,10 +217,17 @@ class InputDialog(tk.Toplevel):
         map_key = f'map_{widget_id}'
         self.data_maps[map_key] = display_to_data
 
-        ttk.Label(self.frame, text=label + ":").grid(row=self.curr_row, column=0, sticky="nw", pady=5)
+        lbl = ttk.Label(self.frame, text=label + ":")
+        lbl.grid(row=self.curr_row, column=0, sticky="nw", pady=5)
+        self.widget_map[f'label_{label}'] = lbl
 
         scrollbar = ttk.Scrollbar(self.frame, orient=tk.VERTICAL)
+        self.widget_map[f"scrollbar_{label}"] = scrollbar
         initial_state = tk.DISABLED if disabled else tk.NORMAL
+
+        # Get the custom filter function from config (if it exists)
+        # It should accept the item dict and return True if it should be disabled
+        disable_check_func = option_config.get('disable_check', lambda x: False)
 
         listbox = tk.Listbox(
             self.frame,
@@ -178,20 +240,52 @@ class InputDialog(tk.Toplevel):
             state=initial_state
         )
 
-        for idx, display in enumerate(display_values):
+        # 1. NEW: Store the source data on the widget so we can read it later
+        listbox.source_data = info
+        listbox.hide = option_config.get('hide', [])
+        listbox.disable = option_config.get('disable', [])
+
+        # 2. NEW: Attach the disabled set to the widget (instead of a local variable)
+        listbox.disabled_indices = set()
+
+        for idx, item in enumerate(info):
+            display = item.get('value')
             listbox.insert(tk.END, display)
-            if info[idx].get('selected', False):
+
+            is_disabled = item.get('disabled', False) or disable_check_func(item)
+            if is_disabled:
+                # A. VISUAL: Make text grey
+                listbox.itemconfig(idx, {'fg': '#aaaaaa', 'selectbackground': '#ffffff', 'selectforeground': '#aaaaaa'})
+                # B. LOGIC: Track this index
+                listbox.disabled_indices.add(idx)
+
+            elif item.get('selected', False):
                 listbox.selection_set(idx)
+        listbox.bind('<<ListboxSelect>>', lambda e: self._enforce_disabled_options(listbox, listbox.disabled_indices))
 
         scrollbar.config(command=listbox.yview)
         listbox_name = f'listbox_{widget_id}'
         self.widget_map[listbox_name] = listbox
+        self.label_map[option_config['label']] = listbox
 
         listbox.grid(row=self.curr_row, column=1, sticky="ew", padx=5, pady=5)
         scrollbar.grid(row=self.curr_row, column=2, sticky='ns')
 
         self.curr_row += 1
         self.curr_label = widget_id + 1
+
+    @staticmethod
+    def _enforce_disabled_options(listbox, disabled_indices):
+        """
+        Event handler that prevents selecting items marked as disabled.
+        """
+        # Get current selection (returns a tuple of indices)
+        current_selection = listbox.curselection()
+
+        for index in current_selection:
+            if index in disabled_indices:
+                # If user clicked a greyed-out item, instantly deselect it
+                listbox.selection_clear(index)
 
     def create_buttons(self):
         button_frame = ttk.Frame(self.frame)

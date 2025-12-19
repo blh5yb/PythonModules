@@ -1,0 +1,12 @@
+{
+  "light": {
+    "text": "black", "disabled_text": "#aaaaaa", "bg": "white", "disabled_select_bg": "white",
+    "select_bg": "#0078d7"
+  },
+  "dark": {
+    "text": "white", "disabled_text": "#666666",
+    "bg": "#2d2d2d",
+    "disabled_select_bg": "#2d2d2d",
+    "select_bg": "#0078d7"
+  }
+}
