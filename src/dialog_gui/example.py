@@ -26,8 +26,8 @@ def get_current_theme(): # Returns 'dark' or 'light'
 # Load the colors for the current mode current_mode = get_current_theme() PALETTE = THEME_COLORS[current_mode]
 
 @tkinter_thread_safe
-def run_dialog(fields, ctx: AutomationContext=None):
-    result = ctx.ask_input(title="Weekly Determinations Runtime Options", fields=fields)
+def run_dialog(fields, validate_callback, ctx: AutomationContext=None):
+    result = ctx.ask_input(title="Weekly Determinations Runtime Options", fields=fields, validate_callback=validate_callback)
 
     if result:
         # username, token, project_id_list, env_list = result
@@ -124,6 +124,24 @@ def toggle_fields(dialog, value):
     if options_list:
         toggle_listbox_values(options_list, value)
 
+def validate_form(dialog):
+    # scrollbar = dialog.widget_map.get(f"scrollbar_{label_text}")
+    mode_widget = dialog.get_widget("Mode")
+    mode = mode_widget.get() if mode_widget else 'Mode 1'
+    pass_widget = dialog.get_widget("Password")
+
+    user = dialog.get_widget("Username") if mode == 'Mode 1' else dialog.get_widget("Email")
+    user_type = 'Username' if mode == 'Mode 1' else 'Email'
+    if user and user.winfo_viewable() and not user.get().strip():
+        dialog.show_error(f"Error: {user_type} is required.")
+        return False
+
+    if pass_widget and pass_widget.winfo_viewable() and not pass_widget.get().strip():
+        dialog.show_error("Error: Password is required.")
+        return False
+
+    return True
+
 if __name__ == "__main__":
     fields: FormConfiguration = [
         combobox_field(
@@ -177,7 +195,7 @@ if __name__ == "__main__":
             ]
         ),
     ]
-    run_dialog(fields)
+    run_dialog(fields, validate_form)
     # result = InputDialog.get_input(
     #     title="Dynamic Configuration",
     #     fields=fields

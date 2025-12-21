@@ -5,11 +5,12 @@ from .service import DialogService
 from ..shared import logger, CustomException
 
 
-def ask_user_input(request_queue, result_queue, title, fields):
+def ask_user_input(request_queue, result_queue, title, fields, validate_callback):
     request_queue.put({
         'action': 'show_input',
         'title': title,
-        'fields': fields
+        'fields': fields,
+        'validate_callback': validate_callback
     })
     return result_queue.get()
 
@@ -22,9 +23,9 @@ class AutomationContext:
         self._req = request_queue
         self._res = result_queue
 
-    def ask_input(self, title, fields):
+    def ask_input(self, title, fields, validate_callback ):
         """Clean wrapper for asking user input."""
-        return ask_user_input(self._req, self._res, title, fields)
+        return ask_user_input(self._req, self._res, title, fields, validate_callback)
 
     def quit_ui(self):
         """Signals the tkinter UI to close."""
@@ -55,7 +56,7 @@ def tkinter_thread_safe(func):
         def worker_task():
             try:
                 # Run the actual automation logic
-                func(config, ctx, *args, **kwargs)
+                func(config, *args, ctx, **kwargs)
             except InterruptedError:
                 logger.error(f'Process interrupted by user.')
             except CustomException:

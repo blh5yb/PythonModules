@@ -5,12 +5,13 @@ import tkinter.font as tkFont
 
 OptionConfig = Dict[Any, Any]
 
+
 class InputDialog(tk.Toplevel):
     """
     A dynamic dialog box that generates input widgets.
     """
 
-    def __init__(self, parent, title: str, fields: List[Any]):
+    def __init__(self, parent, title: str, fields: List[Any], validate_callback=None):
         super().__init__(parent)
 
         # --- FIX 1: Remove 'transient' so dialog is independent of hidden root ---
@@ -19,6 +20,7 @@ class InputDialog(tk.Toplevel):
 
         self.root = parent
         self.title(title)
+        self.validate_callback = validate_callback
 
         # Hide initially so we can build it before showing
         self.withdraw()
@@ -43,6 +45,15 @@ class InputDialog(tk.Toplevel):
 
         self.frame = ttk.Frame(self, padding="20")
         self.frame.grid(row=0, column=0, sticky="nsew")
+
+        self.error_label = tk.Label( # showing if a validation error exists
+            self.frame,
+            text="",
+            fg="red",
+            font=("Arial", 10, "bold"),
+            wraplength=300,  # Wrap text if it's too long
+            justify="left"
+        )
         # -------------------------------------------------------------
 
     def get_widget(self, label: str):
@@ -306,8 +317,34 @@ class InputDialog(tk.Toplevel):
         self.dialog_font = tkFont.Font(family=default_font.actual("family"), size=10)
         style.configure(".", font=self.dialog_font)
 
+    def show_error(self, message: str = None):
+        """
+        Displays an error message at the bottom of the dialog.
+        If message is None or empty, hides the error field.
+        """
+        if message:
+            self.error_label.config(text=message)
+            # Grid it at the bottom (use a high row number like 999)
+            # columnspan=3 ensures it spans across Label | Input | Scrollbar
+            self.error_label.grid(row=999, column=0, columnspan=3, sticky="w", padx=10, pady=(10, 0))
+
+            # Optional: Play a system beep
+            self.root.bell()
+        else:
+            # Hide it but remember settings
+            self.error_label.grid_remove()
+
     def ok(self):
+        self.show_error(None)
         self.result = []
+        # Optional validation callback
+        if self.validate_callback:
+            # We pass 'self' so the callback can read widgets and set errors
+            is_valid = self.validate_callback(self)
+
+            # If validation failed, STOP here. Do not close window.
+            if not is_valid:
+                return
 
         for item in self.fields:
             form_field = item.get('form_field', None)

@@ -27,7 +27,7 @@ class DialogService:
                 # Double check root is hidden before showing child
                 self.root.withdraw()
 
-                dialog = InputDialog(self.root, task['title'], task['fields'])
+                dialog = InputDialog(self.root, task['title'], task['fields'], task['validate_callback'])
                 print('dialog', dialog)
                 dialog.create_dialog_window()
 
